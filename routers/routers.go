@@ -16,7 +16,7 @@ func InitRouter(conf *config.Config) *gin.Engine {
 
 	gin.SetMode(conf.Server.Mode)
 
-	//// programatically set swagger info
+	//// programmatically set swagger info
 	//docs.SwaggerInfo.Title = "Study Swagger API"
 	//docs.SwaggerInfo.Description = "This is a sample server API."
 	//docs.SwaggerInfo.Version = "1.0"
@@ -27,6 +27,8 @@ func InitRouter(conf *config.Config) *gin.Engine {
 
 	apiv1 := r.Group("/api/v1")
 	{
+		apiv1.GET("/oauth2/authorize", v1.Authorize)
+
 		// 校验 Token
 		apiv1.GET("/oauth2/check_token", v1.CheckToken)
 	}
