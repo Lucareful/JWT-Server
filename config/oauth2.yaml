@@ -1,0 +1,17 @@
+Server:
+  Mode: debug # server mode: release, debug, test
+  BindAddress: 0.0.0.0:8888 # bind address
+  ReadTimeout: 60
+  WriteTimeout: 60
+
+Mysql:
+  Port:
+  Username: root
+  Password:
+  Database: admin
+  MaxIdleConnections: 100 # MySQL 最大空闲连接数，默认 100
+  MaxOpenConnections: 100 # MySQL 最大打开的连接数，默认 100
+  MaxConnectionLifeTime: 10s # 空闲连接最大存活时间，默认 10s
+
+Log:
+  Level: debug # 日志级别，优先级从低到高依次为：debug, info, warn, error, panic, panic, fatal。
