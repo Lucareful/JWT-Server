@@ -3,7 +3,9 @@ package service
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
 	"encoding/base64"
+	"github.com/luenci/oauth2/store"
 	"strings"
 
 	"github.com/google/uuid"
@@ -11,6 +13,17 @@ import (
 
 func GenerateAuthorizationCode(ctx context.Context, ClientID string) (string, error) {
 
+	code := md5.Sum([]byte(ClientID))
+	redisConn, err := store.GetRedisConn()
+	if err != nil {
+		return "",err
+	}
+	_, err = redisConn.Do("set",ClientID,string(code[:]))
+	if err != nil {
+		return "", err
+	}
+
+	return string(code[:]), nil
 }
 
 func GenerateAuthorizationToken(ctx context.Context, ClientID string) (string, error) {
