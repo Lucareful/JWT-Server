@@ -1,42 +1,25 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
-	"net/url"
-
-	"github.com/luenci/oauth2/service"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-session/session"
+	"github.com/luenci/oauth2/types"
 )
 
-var (
-	srv = service.GetService()
-)
+func Token(ctx *gin.Context) {
 
-func CheckToken(ctx *gin.Context) {
 }
 
 func Authorize(ctx *gin.Context) {
-
-	store, err := session.Start(ctx, ctx.Writer, ctx.Request)
-	if err != nil {
-		http.Error(ctx.Writer, err.Error(), http.StatusInternalServerError)
+	var query types.Authorization
+	if err := ctx.ShouldBindQuery(&query); err != nil {
 		return
 	}
-
-	var form url.Values
-	if v, ok := store.Get("ReturnUri"); ok {
-		form = v.(url.Values)
-	}
-	ctx.Request.Form = form
-
-	store.Delete("ReturnUri")
-	store.Save()
-
-	err = srv.HandleAuthorizeRequest(ctx.Writer, ctx.Request)
-	if err != nil {
-		http.Error(ctx.Writer, err.Error(), http.StatusBadRequest)
-	}
+	fmt.Println(query)
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "success",
+	})
 
 }

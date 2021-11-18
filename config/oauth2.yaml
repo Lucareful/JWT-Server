@@ -1,8 +1,20 @@
 Server:
   Mode: debug # server mode: release, debug, test
-  BindAddress: 0.0.0.0:8888 # bind address
-  ReadTimeout: 60
-  WriteTimeout: 60
+  BindAddress: :10001 # bind address
+  ReadTimeout: 6
+  WriteTimeout: 6
+
+Oauth2:
+  ClientID: 123245 # server mode: release, debug, test
+  ClientSecret: dsa21321r2dadd.;d.d1[. # bind address
+  Endpoint: 0.0.0.0:10001
+  Scopes: All
+
+Redis:
+  Host: 127.0.0.1
+  Password: ""
+  DB: 0
+
 
 Mysql:
   Port:

@@ -1,14 +1,15 @@
-package oauth2
+package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/luenci/oauth2/store"
 
 	"github.com/luenci/oauth2/config"
 	"github.com/luenci/oauth2/routers"
@@ -23,24 +24,23 @@ func main() {
 	config.InitConf()
 	conf := config.GetConf()
 
-	router := routers.InitRouter(conf)
-
 	srv := &http.Server{
-		Addr:           fmt.Sprintf(":%d", conf.Server.BindAddress),
-		Handler:        router,
-		ReadTimeout:    conf.Server.ReadTimeout,
-		WriteTimeout:   conf.Server.WriteTimeout,
+		Addr:           conf.Server.BindAddress,
+		Handler:        routers.InitRouter(conf),
+		ReadTimeout:    conf.Server.ReadTimeout * time.Second,
+		WriteTimeout:   conf.Server.WriteTimeout * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
 	go func() {
 		// service connections
-		log.Printf("server is runing: %d\n", conf.Server.BindAddress)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}
-
 	}()
+	store.PoolInitRedis(conf.Redis.Host, conf.Redis.Password)
+
+	log.Printf("server is runing: %s\n", conf.Server.BindAddress)
 
 	// Wait for interrupt signal to gracefully shut down the server with
 	// a timeout of 5 seconds.
@@ -62,5 +62,5 @@ func main() {
 		log.Fatal("Server Shutdown:", err)
 	}
 	log.Println("Server exiting")
-
+	close(quit)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	cfgFile = "./oauth2.yaml"
+	cfgFile = "./config/oauth2.yaml"
 )
 
 var (
@@ -18,6 +18,21 @@ type Config struct {
 	Server Server
 	Mysql  Mysql
 	Log    Log
+	Oauth2 Oauth2
+	Redis  Redis
+}
+
+type Oauth2 struct {
+	ClientID     string
+	ClientSecret string
+	Scopes       []string
+	Endpoint     string
+}
+
+type Redis struct {
+	Host     string
+	Password string
+	DB       int
 }
 
 type Server struct {

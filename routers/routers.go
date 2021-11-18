@@ -25,12 +25,18 @@ func InitRouter(conf *config.Config) *gin.Engine {
 	//
 	//r.GET("/api/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
 	apiv1 := r.Group("/api/v1")
 	{
 		apiv1.GET("/oauth2/authorize", v1.Authorize)
 
 		// 校验 Token
-		apiv1.GET("/oauth2/check_token", v1.CheckToken)
+		apiv1.GET("/oauth2/token", v1.Token)
 	}
 
 	return r
