@@ -5,8 +5,9 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/base64"
-	"github.com/luenci/oauth2/store"
 	"strings"
+
+	"github.com/luenci/oauth2/store"
 
 	"github.com/google/uuid"
 )
@@ -16,9 +17,9 @@ func GenerateAuthorizationCode(ctx context.Context, ClientID string) (string, er
 	code := md5.Sum([]byte(ClientID))
 	redisConn, err := store.GetRedisConn()
 	if err != nil {
-		return "",err
+		return "", err
 	}
-	_, err = redisConn.Do("set",ClientID,string(code[:]))
+	_, err = redisConn.Do("set", ClientID, string(code[:]))
 	if err != nil {
 		return "", err
 	}
