@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +16,7 @@ func Authorize(ctx *gin.Context) {
 	if err := ctx.ShouldBindQuery(&query); err != nil {
 		return
 	}
-	fmt.Println(query)
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "success",
 	})

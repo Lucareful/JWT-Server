@@ -29,6 +29,7 @@ func PoolInitRedis(server string, password string, DB int) {
 		MaxIdle:     2, //空闲数
 		IdleTimeout: 240 * time.Second,
 		MaxActive:   3, //最大数
+		Wait:        true,
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", server, redis.DialDatabase(DB))
 			if err != nil {

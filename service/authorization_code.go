@@ -12,10 +12,14 @@ import (
 	"github.com/google/uuid"
 )
 
-func GenerateAuthorizationCode(ctx context.Context, ClientID string) (string, error) {
+type authorizationService struct{}
+
+// GenerateAuthorizationCode 生成授权码.
+func (a *authorizationService) GenerateAuthorizationCode(ctx context.Context, ClientID string) (string, error) {
 
 	code := md5.Sum([]byte(ClientID))
 	redisConn, err := store.GetRedisConn()
+	defer redisConn.Close()
 	if err != nil {
 		return "", err
 	}
@@ -27,7 +31,8 @@ func GenerateAuthorizationCode(ctx context.Context, ClientID string) (string, er
 	return string(code[:]), nil
 }
 
-func GenerateAuthorizationToken(ctx context.Context, ClientID string) (string, error) {
+// GenerateAuthorizationToken 生成 accessToken.
+func (a *authorizationService) GenerateAuthorizationToken(ctx context.Context, ClientID string) (string, error) {
 	buf := bytes.NewBufferString(ClientID)
 	buf.WriteString(ClientID)
 	token := uuid.NewMD5(uuid.Must(uuid.NewRandom()), buf.Bytes())
