@@ -37,7 +37,7 @@ func main() {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
-	store.PoolInitRedis(conf.Redis.Host, conf.Redis.Password, conf.Redis.DB)
+	store.PoolInitRedis(conf.Redis.Host, conf.Redis.Password)
 
 	log.Printf("server is runing: %s\n", conf.Server.BindAddress)
 

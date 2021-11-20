@@ -1,46 +1,38 @@
 package store
 
 import (
-	"errors"
+	"log"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
 )
 
-// RedisPool 声明全局连接池句柄
-var RedisPool *redis.Pool
+var (
+	redisPool *redis.Pool
+)
 
-// GetRedisConn 获取 redis 链接对象
-func GetRedisConn() (redis.Conn, error) {
-	// 从连接池中获取 连接对象
-	conn := RedisPool.Get()
-
-	if conn.Err() != nil {
-		return nil, errors.New("redis conn 错误")
-	}
-
-	return conn, nil
-}
-
-// PoolInitRedis Redis 连接池
-func PoolInitRedis(server string, password string, DB int) {
+// PoolInitRedis Redis 连接池.
+func PoolInitRedis(server string, password string) {
 	// 使 RedisPool 内存逃逸
-	RedisPool = &redis.Pool{
+	redisPool = &redis.Pool{
 		MaxIdle:     2, //空闲数
 		IdleTimeout: 240 * time.Second,
 		MaxActive:   3, //最大数
 		Wait:        true,
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", server, redis.DialDatabase(DB))
+			c, err := redis.Dial("tcp", server)
 			if err != nil {
+				log.Printf("redis.Dial err:%s", err)
 				return nil, err
 			}
 			if password != "" {
 				if _, err := c.Do("AUTH", password); err != nil {
+					log.Printf("redis.Dial err:%s", err)
 					c.Close()
 					return nil, err
 				}
 			}
+			log.Printf("redis.Dial err:%s", err)
 			return c, err
 		},
 		TestOnBorrow: func(c redis.Conn, t time.Time) error {
@@ -48,4 +40,64 @@ func PoolInitRedis(server string, password string, DB int) {
 			return err
 		},
 	}
+}
+
+// RedisStore redis存储对象.
+type RedisStore struct {
+	pool *redis.Pool
+}
+
+// GetConn 获取redis连接.
+func (r *RedisStore) GetConn() (redis.Conn, error) {
+	conn := r.pool.Get()
+	return conn, conn.Err()
+}
+
+// SetValue 设置redis指定key值.
+func (r *RedisStore) SetValue(key string, value string) error {
+	conn, err := r.GetConn()
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	_, err = conn.Do("SET", key, value)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetValue 获取redis指定key值.
+func (r *RedisStore) GetValue(key string) (string, error) {
+	conn, err := r.GetConn()
+	if err != nil {
+		return "", err
+	}
+	defer conn.Close()
+
+	value, err := redis.String(conn.Do("GET", key))
+	if err != nil {
+		return "", err
+	}
+	return value, nil
+}
+
+// DelValue 删除redis指定key值.
+func (r *RedisStore) DelValue(key string) error {
+	conn, err := r.GetConn()
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	_, err = conn.Do("DEL", key)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func NewRedisStore() *RedisStore {
+	return &RedisStore{redisPool}
 }
