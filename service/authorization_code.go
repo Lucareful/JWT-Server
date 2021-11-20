@@ -18,13 +18,8 @@ type authorizationService struct{}
 func (a *authorizationService) GenerateAuthorizationCode(ctx context.Context, ClientID string) (string, error) {
 
 	code := md5.Sum([]byte(ClientID))
-	redisConn, err := store.GetRedisConn()
-	defer redisConn.Close()
-	if err != nil {
-		return "", err
-	}
-	_, err = redisConn.Do("set", ClientID, string(code[:]))
-	if err != nil {
+	redisStore := store.NewRedisStore()
+	if err := redisStore.SetValue(ClientID, string(code[:])); err != nil {
 		return "", err
 	}
 
@@ -38,6 +33,10 @@ func (a *authorizationService) GenerateAuthorizationToken(ctx context.Context, C
 	token := uuid.NewMD5(uuid.Must(uuid.NewRandom()), buf.Bytes())
 	code := base64.URLEncoding.EncodeToString([]byte(token.String()))
 	code = strings.ToUpper(strings.TrimRight(code, "="))
+	redisStore := store.NewRedisStore()
+	if err := redisStore.SetValue(ClientID, string(code[:])); err != nil {
+		return "", err
+	}
 
 	return code, nil
 }

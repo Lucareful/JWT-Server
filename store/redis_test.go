@@ -20,12 +20,13 @@ func TestRedisStore_SetValue(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{"RedisSetValue", fields{PoolInitRedis("127.0.0.1:6379", "123456")}, args{"key", "value"}, false},
+		{"RedisSetValue", fields{}, args{"key", "value"}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			PoolInitRedis("127.0.0.1:6379", "123456")
 			r := &RedisStore{
-				pool: tt.fields.pool,
+				pool: redisPool,
 			}
 			if err := r.SetValue(tt.args.key, tt.args.value); (err != nil) != tt.wantErr {
 				t.Errorf("SetValue() error = %v, wantErr %v", err, tt.wantErr)
