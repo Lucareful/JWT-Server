@@ -1,10 +1,8 @@
 package v1
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	pkg "github.com/luenci/gopkg"
 	"github.com/luenci/oauth2/types"
 )
 
@@ -15,20 +13,14 @@ func Token(ctx *gin.Context) {
 func Authorize(ctx *gin.Context) {
 	var query types.Authorization
 	if err := ctx.ShouldBindQuery(&query); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		pkg.Response(ctx, 400001, err)
 		return
 	}
-	fmt.Println(query)
 	code, err := srv.Authorization.GenerateAuthorizationCode(ctx, query.ClientID)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		pkg.Response(ctx, 400001, err)
 		return
 	}
-	fmt.Println(code)
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"code":    code,
-		"message": "success",
-	})
-
+	pkg.Response(ctx, 200000, code)
 }
