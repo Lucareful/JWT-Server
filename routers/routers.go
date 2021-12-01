@@ -33,6 +33,7 @@ func InitRouter(conf *config.Config) *gin.Engine {
 
 	apiv1 := r.Group("/api/v1")
 	{
+		// http://127.0.0.1:10001/api/v1/oauth2/authorize?client_id=11111&response_type=code&scope=all&redirect_uri=http://127.0.0.1:10001/api/v1/oauth2/token
 		apiv1.GET("/oauth2/authorize", v1.Authorize)
 
 		// 校验 Token

@@ -7,6 +7,19 @@ import (
 )
 
 func Token(ctx *gin.Context) {
+	var query types.AccessToken
+
+	if err := ctx.ShouldBindQuery(&query); err != nil {
+		pkg.Response(ctx, 400001, err)
+		return
+	}
+	code, err := srv.Authorization.GenerateAccessToken(ctx, query.AuthCode)
+	if err != nil {
+		pkg.Response(ctx, 400001, err)
+		return
+	}
+
+	pkg.Response(ctx, 200000, code)
 
 }
 

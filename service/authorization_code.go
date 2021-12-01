@@ -18,6 +18,8 @@ type authorizationService struct{}
 // GenerateAuthorizationCode 生成授权码.
 func (a *authorizationService) GenerateAuthorizationCode(ctx context.Context, ClientID string) (int, error) {
 
+	// TODO: 判断客户端是否存在.
+
 	code := rand.Intn(9999999999)
 	fmt.Println(code)
 	redisStore := store.NewRedisStore()
@@ -29,14 +31,15 @@ func (a *authorizationService) GenerateAuthorizationCode(ctx context.Context, Cl
 }
 
 // GenerateAccessToken 生成 accessToken.
-func (a *authorizationService) GenerateAccessToken(ctx context.Context, ClientID string) (string, error) {
-	buf := bytes.NewBufferString(ClientID)
-	buf.WriteString(ClientID)
+func (a *authorizationService) GenerateAccessToken(ctx context.Context, AuthCode string) (string, error) {
+
+	buf := bytes.NewBufferString(AuthCode)
+	buf.WriteString(AuthCode)
 	token := uuid.NewMD5(uuid.Must(uuid.NewRandom()), buf.Bytes())
 	code := base64.URLEncoding.EncodeToString([]byte(token.String()))
 	code = strings.ToUpper(strings.TrimRight(code, "="))
 	redisStore := store.NewRedisStore()
-	if err := redisStore.SetValue(ClientID, string(code[:])); err != nil {
+	if err := redisStore.SetValue(AuthCode, code); err != nil {
 		return "", err
 	}
 

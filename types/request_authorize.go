@@ -1,6 +1,6 @@
 package types
 
-// Authorization code 认证模式请求体
+// Authorization code 认证模式请求体.
 //| 参数          | 类型   | 说明                                                         |
 //| ------------- | ------ | -----------------------------------------------------------|
 //| client_id     | string | 在oauth2 server 注册的client_id                             |
@@ -14,4 +14,9 @@ type Authorization struct {
 	Scope        string `json:"scope"          form:"scope"          binding:"required"`
 	State        string `json:"state"          form:"state"          binding:"omitempty,oneof=1 2"`
 	RedirectURI  string `json:"redirect_uri"   form:"redirect_uri"   binding:"required"`
+}
+
+// AccessToken 访问令牌请求体.
+type AccessToken struct {
+	AuthCode string `json:"auth_code"      form:"auth_code"      binding:"required"`
 }
