@@ -54,7 +54,7 @@ func (r *RedisStore) GetConn() (redis.Conn, error) {
 }
 
 // SetValue 设置redis指定key值.
-func (r *RedisStore) SetValue(key string, value string) error {
+func (r *RedisStore) SetValue(key, value interface{}) error {
 	conn, err := r.GetConn()
 	if err != nil {
 		return err
@@ -69,7 +69,7 @@ func (r *RedisStore) SetValue(key string, value string) error {
 }
 
 // GetValue 获取redis指定key值.
-func (r *RedisStore) GetValue(key string) (string, error) {
+func (r *RedisStore) GetValue(key interface{}) (interface{}, error) {
 	conn, err := r.GetConn()
 	if err != nil {
 		return "", err
@@ -84,7 +84,7 @@ func (r *RedisStore) GetValue(key string) (string, error) {
 }
 
 // DelValue 删除redis指定key值.
-func (r *RedisStore) DelValue(key string) error {
+func (r *RedisStore) DelValue(key interface{}) error {
 	conn, err := r.GetConn()
 	if err != nil {
 		return err

@@ -10,8 +10,8 @@ package types
 //| redirect_uri  | string | 发放`code`用的回调uri,回调时会在uri后面跟上`?code=**&state=xxx` |
 type Authorization struct {
 	ClientID     string `json:"client_id"      form:"client_id"      binding:"required"`
-	ResponseType string `json:"response_type"  form:"response_type"  binding:"required"`
+	ResponseType string `json:"response_type"  form:"response_type"  binding:"required,eq=code"`
 	Scope        string `json:"scope"          form:"scope"          binding:"required"`
-	State        string `json:"state"          form:"state"          binding:"required"`
+	State        string `json:"state"          form:"state"          binding:"omitempty,oneof=1 2"`
 	RedirectURI  string `json:"redirect_uri"   form:"redirect_uri"   binding:"required"`
 }

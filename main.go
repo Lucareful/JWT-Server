@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
@@ -20,6 +21,9 @@ import (
 //go:generate codegen -type=int pkg/e/apiserver.go
 
 func main() {
+	// 随机数种子，用于生成随机数。
+	rand.Seed(time.Now().UnixNano())
+
 	config.InitConf()
 	conf := config.GetConf()
 

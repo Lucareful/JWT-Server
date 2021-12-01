@@ -3,8 +3,9 @@ package service
 import (
 	"bytes"
 	"context"
-	"crypto/md5"
 	"encoding/base64"
+	"fmt"
+	"math/rand"
 	"strings"
 
 	"github.com/luenci/oauth2/store"
@@ -15,19 +16,20 @@ import (
 type authorizationService struct{}
 
 // GenerateAuthorizationCode 生成授权码.
-func (a *authorizationService) GenerateAuthorizationCode(ctx context.Context, ClientID string) (string, error) {
+func (a *authorizationService) GenerateAuthorizationCode(ctx context.Context, ClientID string) (int, error) {
 
-	code := md5.Sum([]byte(ClientID))
+	code := rand.Intn(9999999999)
+	fmt.Println(code)
 	redisStore := store.NewRedisStore()
-	if err := redisStore.SetValue(ClientID, string(code[:])); err != nil {
-		return "", err
+	if err := redisStore.SetValue(ClientID, code); err != nil {
+		return 0, err
 	}
 
-	return string(code[:]), nil
+	return code, nil
 }
 
-// GenerateAuthorizationToken 生成 accessToken.
-func (a *authorizationService) GenerateAuthorizationToken(ctx context.Context, ClientID string) (string, error) {
+// GenerateAccessToken 生成 accessToken.
+func (a *authorizationService) GenerateAccessToken(ctx context.Context, ClientID string) (string, error) {
 	buf := bytes.NewBufferString(ClientID)
 	buf.WriteString(ClientID)
 	token := uuid.NewMD5(uuid.Must(uuid.NewRandom()), buf.Bytes())
