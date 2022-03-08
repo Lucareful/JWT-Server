@@ -10,9 +10,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/luenci/oauth2/store/mysql"
+
+	"github.com/luenci/oauth2/store/redis"
+
 	"github.com/luenci/oauth2/config"
 	"github.com/luenci/oauth2/routers"
-	"github.com/luenci/oauth2/store"
 )
 
 // 生成 swagger
@@ -24,15 +27,23 @@ func main() {
 	// 随机数种子，用于生成随机数。
 	rand.Seed(time.Now().UnixNano())
 
+	// 初始化配置
 	config.InitConf()
 	conf := config.GetConf()
 
+	// check 创建数据库连接
+	mysql.InitMysqlClient(conf.Mysql.DSN, mysql.WithMaxIdleConnections(conf.Mysql.MaxIdleConnections),
+		mysql.WithMaxOpenConnections(conf.Mysql.MaxOpenConnections),
+		mysql.WithMaxConnectionLifeTime(conf.Mysql.MaxConnectionLifeTime))
+
+	// 创建redis连接
+	redis.PoolInitRedis(conf.Redis.Host, conf.Redis.Password)
+
 	srv := &http.Server{
-		Addr:           conf.Server.BindAddress,
-		Handler:        routers.InitRouter(conf),
-		ReadTimeout:    conf.Server.ReadTimeout * time.Second,
-		WriteTimeout:   conf.Server.WriteTimeout * time.Second,
-		MaxHeaderBytes: 1 << 20,
+		Addr:         conf.Server.BindAddress,
+		Handler:      routers.InitRouter(conf),
+		ReadTimeout:  conf.Server.ReadTimeout * time.Second,
+		WriteTimeout: conf.Server.WriteTimeout * time.Second,
 	}
 
 	go func() {
@@ -41,7 +52,6 @@ func main() {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
-	store.PoolInitRedis(conf.Redis.Host, conf.Redis.Password)
 
 	log.Printf("server is runing: %s\n", conf.Server.BindAddress)
 

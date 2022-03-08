@@ -9,6 +9,8 @@
 # Vendor
 vendor/
 
+config/oauth2.yaml
+
 *.exe
 *.exe~
 *.dll

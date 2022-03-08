@@ -43,11 +43,7 @@ type Server struct {
 }
 
 type Mysql struct {
-	Host                  string
-	Port                  string
-	Database              string
-	Username              string
-	Password              string
+	DSN                   string
 	MaxIdleConnections    int
 	MaxOpenConnections    int
 	MaxConnectionLifeTime time.Duration

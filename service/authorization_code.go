@@ -8,7 +8,7 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/luenci/oauth2/store"
+	"github.com/luenci/oauth2/store/redis"
 
 	"github.com/google/uuid"
 )
@@ -22,7 +22,7 @@ func (a *authorizationService) GenerateAuthorizationCode(ctx context.Context, Cl
 
 	code := rand.Intn(9999999999)
 	fmt.Println(code)
-	redisStore := store.NewRedisStore()
+	redisStore := redis.NewRedisStore()
 	if err := redisStore.SetValue(ClientID, code); err != nil {
 		return 0, err
 	}
@@ -38,7 +38,7 @@ func (a *authorizationService) GenerateAccessToken(ctx context.Context, AuthCode
 	token := uuid.NewMD5(uuid.Must(uuid.NewRandom()), buf.Bytes())
 	code := base64.URLEncoding.EncodeToString([]byte(token.String()))
 	code = strings.ToUpper(strings.TrimRight(code, "="))
-	redisStore := store.NewRedisStore()
+	redisStore := redis.NewRedisStore()
 	if err := redisStore.SetValue(AuthCode, code); err != nil {
 		return "", err
 	}

@@ -23,6 +23,7 @@ func Token(ctx *gin.Context) {
 
 }
 
+// Authorize 生成授权码.
 func Authorize(ctx *gin.Context) {
 	var query types.Authorization
 	if err := ctx.ShouldBindQuery(&query); err != nil {
