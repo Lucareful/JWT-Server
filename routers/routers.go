@@ -3,7 +3,6 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/luenci/oauth2/config"
-	"github.com/luenci/oauth2/models"
 	v1 "github.com/luenci/oauth2/routers/api/v1"
 )
 
@@ -32,16 +31,13 @@ func InitRouter(conf *config.Config) *gin.Engine {
 		})
 	})
 
+	r.POST("/login", v1.Login)
+	r.DELETE("/logout", v1.Logout)
+
 	apiv1 := r.Group("/api/v1")
 
 	users := make(gin.Accounts)
 
-	//TODO: 用户表优化 (太丑陋啦！！！)
-	usr := models.NewUser()
-	allUsers, _ := usr.GetAllUsers()
-	for _, user := range allUsers {
-		users[user.Name] = user.Password
-	}
 	apiv1.Use(gin.BasicAuth(users))
 	{
 		// http://127.0.0.1:10001/api/v1/oauth2/authorize?client_id=11111&response_type=code&scope=all&redirect_uri=http://127.0.0.1:10001/api/v1/oauth2/token
