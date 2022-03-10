@@ -3,6 +3,7 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/luenci/oauth2/config"
+	"github.com/luenci/oauth2/pkg/middlewares"
 	v1 "github.com/luenci/oauth2/routers/api/v1"
 )
 
@@ -13,6 +14,10 @@ func InitRouter(conf *config.Config) *gin.Engine {
 	r.Use(gin.Logger())
 
 	r.Use(gin.Recovery())
+
+	r.Use(middlewares.Cors())
+
+	r.Use(middlewares.RequestLoggerMiddleware())
 
 	gin.SetMode(conf.Server.Mode)
 
@@ -32,13 +37,11 @@ func InitRouter(conf *config.Config) *gin.Engine {
 	})
 
 	r.POST("/login", v1.Login)
-	r.DELETE("/logout", v1.Logout)
+
+	//r.DELETE("/logout", v1.Logout)
 
 	apiv1 := r.Group("/api/v1")
 
-	users := make(gin.Accounts)
-
-	apiv1.Use(gin.BasicAuth(users))
 	{
 		// http://127.0.0.1:10001/api/v1/oauth2/authorize?client_id=11111&response_type=code&scope=all&redirect_uri=http://127.0.0.1:10001/api/v1/oauth2/token
 		apiv1.GET("/oauth2/authorize", v1.Authorize)

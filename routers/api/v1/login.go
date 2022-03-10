@@ -28,6 +28,6 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	pkg.Response(ctx, 200000, users)
+	pkg.Response(ctx, 200000, users.UserId)
 
 }
