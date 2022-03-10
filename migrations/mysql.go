@@ -6,18 +6,23 @@ import (
 	"github.com/luenci/oauth2/config"
 	"github.com/luenci/oauth2/models"
 	"github.com/luenci/oauth2/store/mysql"
+
+	"github.com/cheggaaa/pb/v3"
 )
 
 func main() {
 	// 初始化配置
 	config.InitConf()
 	conf := config.GetConf()
-
-	fmt.Println(conf.Mysql.DSN)
 	mysql.InitMysqlClient(conf.Mysql.DSN)
+	fmt.Println("开始执行 migrations")
+	bar := pb.StartNew(1)
 	err := mysql.MysqlDB.AutoMigrate(&models.User{}, &models.Client{}, &models.Token{})
 	if err != nil {
 		fmt.Println("AutoMigrate error:", err)
 	}
+	bar.Increment()
 
+	bar.Finish()
+	fmt.Println("执行 migrations 完毕")
 }
