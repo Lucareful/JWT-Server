@@ -42,7 +42,7 @@
                     //如果data是对象，则可以将这个对象的各属性值赋给其他变量
                     //textStatus是表示状态的字符串，这里textStatus的值是"success"
 
-                    alert(data);
+                    alert(data.msg);
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {  //连接至ashx文件失败时，执行函数
                     //XMLHttpRequest在这个例子里没有用到

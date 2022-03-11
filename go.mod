@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/cheggaaa/pb/v3 v3.0.8
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/gomodule/redigo v1.8.5

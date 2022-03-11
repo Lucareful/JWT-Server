@@ -19,6 +19,7 @@ type Config struct {
 	Mysql  Mysql
 	Log    Log
 	Oauth2 Oauth2
+	JWT    JWT
 	Redis  Redis
 }
 
@@ -27,6 +28,12 @@ type Oauth2 struct {
 	ClientSecret string
 	Scopes       []string
 	Endpoint     string
+}
+
+type JWT struct {
+	Secret string
+	Name   string
+	Expire time.Duration
 }
 
 type Redis struct {

@@ -20,14 +20,13 @@ func Login(ctx *gin.Context) {
 
 	users := models.NewUser()
 	err := users.GetUserID(user.Name, user.Password)
-
-	ctx.SetCookie("UserId", users.UserId, 3600, "/", "localhost", false, true)
-
 	if err != nil {
-		pkg.Response(ctx, 400001, err)
+		pkg.Response(ctx, 500001, err)
 		return
 	}
 
-	pkg.Response(ctx, 200000, users.UserId)
+	token := srv.JWT.GenerateToken(users.UserId, true)
+
+	pkg.Response(ctx, 200000, token)
 
 }

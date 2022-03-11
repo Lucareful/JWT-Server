@@ -10,6 +10,11 @@ Oauth2:
   Endpoint: 0.0.0.0:10001
   Scopes: All
 
+JWT:
+  Secret: 92j93n21ini.
+  Name: jwt
+  Expire: 360
+
 Redis:
   Host: 127.0.0.1:6379
   Password: ""
