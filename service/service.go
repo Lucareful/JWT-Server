@@ -17,7 +17,7 @@ type AuthorizationService interface {
 }
 
 type JWTService interface {
-	GenerateToken(email string, isUser bool) string
+	GenerateToken(userId string, isUser bool) string
 	ValidateToken(token string) (*jwt.Token, error)
 }
 
@@ -25,6 +25,9 @@ type JWTService interface {
 func NewALLService() *Service {
 	return &Service{
 		Authorization: (*authorizationService)(nil),
-		JWT:           NewJWTAuthService(),
+		JWT: &jwtServices{
+			secretKey: getSecretKey(),
+			issure:    getName(),
+		},
 	}
 }

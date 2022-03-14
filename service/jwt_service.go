@@ -20,16 +20,9 @@ type jwtServices struct {
 	issure    string
 }
 
-// NewJWTAuthService returns a new JWT service.
-func NewJWTAuthService() JWTService {
-	return &jwtServices{
-		secretKey: getSecretKey(),
-		issure:    getName(),
-	}
-}
-
 func getSecretKey() string {
-	secret := config.GetConf().JWT.Secret
+	conf := config.GetConf()
+	secret := conf.JWT.Secret
 	if secret == "" {
 		secret = "secret"
 	}
@@ -37,40 +30,41 @@ func getSecretKey() string {
 }
 
 func getName() string {
-	name := config.GetConf().JWT.Name
+	conf := config.GetConf()
+	name := conf.JWT.Name
 	if name == "" {
 		name = "Luenci"
 	}
 	return name
 }
 
-func (service *jwtServices) GenerateToken(userId string, isUser bool) string {
+func (srv *jwtServices) GenerateToken(userId string, isUser bool) string {
 	claims := &authCustomClaims{
 		userId,
 		isUser,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 48).Unix(),
-			Issuer:    service.issure,
+			Issuer:    getName(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	//encoded string
-	t, err := token.SignedString([]byte(service.secretKey))
+	// encoded string
+	t, err := token.SignedString([]byte(getSecretKey()))
 	if err != nil {
 		panic(err)
 	}
 	return t
 }
 
-func (service *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, error) {
+func (srv *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, error) {
 	return jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
-		if _, isvalid := token.Method.(*jwt.SigningMethodHMAC); !isvalid {
-			return nil, fmt.Errorf("Invalid token", token.Header["alg"])
+		if _, isValid := token.Method.(*jwt.SigningMethodHMAC); !isValid {
+			return nil, fmt.Errorf("invalid JWT token %s", token.Header["alg"])
 
 		}
-		return []byte(service.secretKey), nil
+		return []byte(getSecretKey()), nil
 	})
 
 }

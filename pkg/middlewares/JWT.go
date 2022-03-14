@@ -9,19 +9,16 @@ import (
 	"github.com/luenci/oauth2/service"
 )
 
-const BEARER_SCHEMA = "Bearer"
-
 func AuthorizeJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader, _ := c.Cookie("Token")
+		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
-		tokenString := authHeader[len(BEARER_SCHEMA):]
 		srv := service.NewALLService()
-		var token, err = srv.JWT.ValidateToken(tokenString)
+		var token, err = srv.JWT.ValidateToken(authHeader)
 		if token.Valid {
 			claims := token.Claims.(jwt.MapClaims)
 			fmt.Println(claims)
