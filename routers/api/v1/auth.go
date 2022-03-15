@@ -10,7 +10,7 @@ func Token(ctx *gin.Context) {
 	var query types.AccessToken
 
 	if err := ctx.ShouldBindQuery(&query); err != nil {
-		pkg.Response(ctx, 400001, err)
+		ctx.JSON(400001, types.Translate(err))
 		return
 	}
 	code, err := srv.Authorization.GenerateAccessToken(ctx, query.AuthCode)
@@ -27,7 +27,7 @@ func Token(ctx *gin.Context) {
 func Authorize(ctx *gin.Context) {
 	var query types.Authorization
 	if err := ctx.ShouldBindQuery(&query); err != nil {
-		pkg.Response(ctx, 400001, err)
+		pkg.Response(ctx, 400001, types.Translate(err))
 		return
 	}
 	code, err := srv.Authorization.GenerateAuthorizationCode(ctx, query.ClientID)

@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/luenci/oauth2/types"
+
 	"github.com/luenci/oauth2/store/mysql"
 
 	"github.com/luenci/oauth2/store/redis"
@@ -45,6 +47,9 @@ func main() {
 		ReadTimeout:  conf.Server.ReadTimeout * time.Second,
 		WriteTimeout: conf.Server.WriteTimeout * time.Second,
 	}
+
+	// 初始化翻译
+	types.Init()
 
 	go func() {
 		// service connections
