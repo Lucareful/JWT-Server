@@ -23,11 +23,3 @@ require (
 	gorm.io/driver/mysql v1.3.2
 	gorm.io/gorm v1.23.2
 )
-
-replace (
-	github.com/luenci/oauth2/config => ./config
-	github.com/luenci/oauth2/pkg => ./pkg
-	github.com/luenci/oauth2/routers => ./routers
-	github.com/luenci/oauth2/routers/api => ./api
-	github.com/luenci/oauth2/service => ./service
-)
