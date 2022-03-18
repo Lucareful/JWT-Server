@@ -3,7 +3,6 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	pkg "github.com/luenci/gopkg"
-	"github.com/luenci/oauth2/models"
 )
 
 func Login(ctx *gin.Context) {
@@ -15,13 +14,6 @@ func Login(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		pkg.Response(ctx, 400001, err)
-		return
-	}
-
-	users := models.NewUser()
-	err := users.GetUserID(user.Name, user.Password)
-	if err != nil {
-		pkg.Response(ctx, 500001, err)
 		return
 	}
 

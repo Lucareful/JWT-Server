@@ -2,12 +2,15 @@ package models
 
 import (
 	"github.com/google/uuid"
+	store "github.com/luenci/oauth2/store"
 	ms "github.com/luenci/oauth2/store/mysql"
 	"gorm.io/gorm"
 )
 
 // User struct 用户信息表
 type User struct {
+	// 绑定的数据源
+	DataStore store.DataStore `gorm:"migration"`
 	gorm.Model
 	UserId   string `gorm:"type:varchar(36);unique_index;not null"`
 	Name     string `gorm:"type:varchar(100);not null"`

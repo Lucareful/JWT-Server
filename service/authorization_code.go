@@ -8,12 +8,16 @@ import (
 	"math/rand"
 	"strings"
 
+	"github.com/luenci/oauth2/store"
+
 	"github.com/luenci/oauth2/store/redis"
 
 	"github.com/google/uuid"
 )
 
-type authorizationService struct{}
+type authorizationService struct {
+	store store.Factory
+}
 
 // GenerateAuthorizationCode 生成授权码.
 func (a *authorizationService) GenerateAuthorizationCode(ctx context.Context, ClientID string) (int, error) {
@@ -44,4 +48,10 @@ func (a *authorizationService) GenerateAccessToken(ctx context.Context, AuthCode
 	}
 
 	return code, nil
+}
+
+func newAuthorizationService(srv *service) *authorizationService {
+	return &authorizationService{
+		store: srv.store,
+	}
 }

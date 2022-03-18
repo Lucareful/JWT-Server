@@ -1,7 +1,9 @@
 package mysql
 
 import (
-	"time"
+	"sync"
+
+	"github.com/luenci/oauth2/service"
 
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
@@ -11,51 +13,48 @@ import (
 )
 
 var (
-	MysqlDB *gorm.DB
+	once sync.Once
 )
 
-var (
-	_defaultMaxOpenConnections    = 10
-	_defaultMaxIdleConnections    = 10
-	_defaultMaxConnectionLifeTime = time.Second * 10
-)
+type datastore struct {
 
-type MySQL struct {
-	maxOpenConnections    int
-	maxIdleConnections    int
-	maxConnectionLifeTime time.Duration
+	// can include two database instance if needed
+	db *gorm.DB
 }
 
-func InitMysqlClient(dsn string, opts ...Options) {
+func (ds *datastore) JWT() service.JWTService {
+	return service.NewJWTServices(ds)
+}
+
+func (ds *datastore) Authorization() service.AuthorizationService {
+	return (ds)
+}
+
+func NewMysqlStore(dsn string, opts ...Options) (*gorm.DB, error) {
+
 	var err error
+	var dbIns *gorm.DB
+	once.Do(func() {
+		dbIns, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+			SkipDefaultTransaction:                   false,
+			DisableForeignKeyConstraintWhenMigrating: true,
+			Logger:                                   logger.Default.LogMode(logger.Warn),
+			NamingStrategy:                           schema.NamingStrategy{SingularTable: true},
+		})
+		if err != nil {
+			panic(err)
+		}
+		db, _ := dbIns.DB()
+		for _, opt := range opts {
+			opt(db)
+		}
 
-	MysqlDB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
-		SkipDefaultTransaction:                   false,
-		DisableForeignKeyConstraintWhenMigrating: true,
-		Logger:                                   logger.Default.LogMode(logger.Warn),
-		NamingStrategy:                           schema.NamingStrategy{SingularTable: true},
+		// uncomment the following line if you need auto migration the given models
+		// not suggested in production environment.
+		// migrateDatabase(dbIns)
+
+		mysqlFactory = &datastore{dbIns}
 	})
-	if err != nil {
-		panic(err)
-	}
 
-	db, err := MysqlDB.DB()
-	if err != nil {
-		panic(err)
-	}
-
-	MySQLClient := &MySQL{
-		maxConnectionLifeTime: _defaultMaxConnectionLifeTime,
-		maxOpenConnections:    _defaultMaxOpenConnections,
-		maxIdleConnections:    _defaultMaxIdleConnections,
-	}
-
-	for _, opt := range opts {
-		opt(MySQLClient)
-	}
-
-	db.SetMaxOpenConns(MySQLClient.maxOpenConnections)
-	db.SetMaxIdleConns(MySQLClient.maxIdleConnections)
-	db.SetConnMaxLifetime(MySQLClient.maxConnectionLifeTime)
-
+	return mysqlFactory, nil
 }

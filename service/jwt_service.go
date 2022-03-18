@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/luenci/oauth2/store"
+
+	"github.com/luenci/oauth2/models"
+
 	"github.com/luenci/oauth2/config"
 
 	"github.com/dgrijalva/jwt-go"
@@ -16,9 +20,12 @@ type authCustomClaims struct {
 }
 
 type jwtServices struct {
+	store     store.Factory
 	secretKey string
 	issure    string
 }
+
+var _ JWTService = (*jwtServices)(nil)
 
 func getSecretKey() string {
 	conf := config.GetConf()
@@ -38,9 +45,15 @@ func getName() string {
 	return name
 }
 
-func (srv *jwtServices) GenerateToken(userId string, isUser bool) string {
+func (srv *jwtServices) GenerateToken(userName, password string, isUser bool) string {
+
+	user := models.NewUser()
+	err := user.GetUserID(userName, password)
+	if err != nil {
+		return ""
+	}
 	claims := &authCustomClaims{
-		userId,
+		user.UserId,
 		isUser,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 48).Unix(),
@@ -67,4 +80,12 @@ func (srv *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, error) {
 		return []byte(getSecretKey()), nil
 	})
 
+}
+
+func newJWTServices(srv *service) *jwtServices {
+	return &jwtServices{
+		store:     srv.store,
+		secretKey: getSecretKey(),
+		issure:    getName(),
+	}
 }
