@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/luenci/oauth2/config"
-	"github.com/luenci/oauth2/models"
+	"github.com/luenci/oauth2/repository"
 	"github.com/luenci/oauth2/store/mysql"
 
 	"github.com/cheggaaa/pb/v3"
@@ -17,7 +17,7 @@ func main() {
 	mysql.InitMysqlClient(conf.Mysql.DSN)
 	fmt.Println("开始执行 migrations")
 	bar := pb.StartNew(1)
-	err := mysql.MysqlDB.AutoMigrate(&models.User{}, &models.Client{}, &models.Token{})
+	err := mysql.MysqlDB.AutoMigrate(&repository.User{}, &repository.Client{}, &repository.Token{})
 	if err != nil {
 		fmt.Println("AutoMigrate error:", err)
 	}

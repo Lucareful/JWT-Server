@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/luenci/oauth2/types"
+	"github.com/luenci/oauth2/schema"
 
 	"github.com/luenci/oauth2/store/mysql"
 
@@ -49,7 +49,7 @@ func main() {
 	}
 
 	// 初始化翻译
-	types.Init()
+	schema.Init()
 
 	go func() {
 		// service connections

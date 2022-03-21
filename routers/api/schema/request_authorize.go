@@ -1,4 +1,4 @@
-package types
+package schema
 
 // Authorization code 认证模式请求体.
 //| 参数          | 类型   | 说明                                                         |

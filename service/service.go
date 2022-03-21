@@ -28,17 +28,17 @@ type service struct {
 	store store.Factory
 }
 
-// NewService returns Service interface.
-func NewService(store store.Factory) Service {
-	return &service{
-		store: store,
-	}
-}
-
 func (s *service) JWT() JWTService {
 	return newJWTServices(s)
 }
 
 func (s *service) Authorization() AuthorizationService {
 	return newAuthorizationService(s)
+}
+
+// NewService returns Service interface.
+func NewService(store store.Factory) Service {
+	return &service{
+		store: store,
+	}
 }

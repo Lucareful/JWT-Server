@@ -6,7 +6,7 @@ import (
 
 	"github.com/luenci/oauth2/store"
 
-	"github.com/luenci/oauth2/models"
+	"github.com/luenci/oauth2/repository"
 
 	"github.com/luenci/oauth2/config"
 
@@ -47,7 +47,7 @@ func getName() string {
 
 func (srv *jwtServices) GenerateToken(userName, password string, isUser bool) string {
 
-	user := models.NewUser()
+	user := repository.NewUser()
 	err := user.GetUserID(userName, password)
 	if err != nil {
 		return ""

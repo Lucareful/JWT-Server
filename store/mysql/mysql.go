@@ -3,8 +3,6 @@ package mysql
 import (
 	"sync"
 
-	"github.com/luenci/oauth2/service"
-
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 
@@ -15,20 +13,6 @@ import (
 var (
 	once sync.Once
 )
-
-type datastore struct {
-
-	// can include two database instance if needed
-	db *gorm.DB
-}
-
-func (ds *datastore) JWT() service.JWTService {
-	return service.NewJWTServices(ds)
-}
-
-func (ds *datastore) Authorization() service.AuthorizationService {
-	return (ds)
-}
 
 func NewMysqlStore(dsn string, opts ...Options) (*gorm.DB, error) {
 
@@ -49,12 +33,11 @@ func NewMysqlStore(dsn string, opts ...Options) (*gorm.DB, error) {
 			opt(db)
 		}
 
-		// uncomment the following line if you need auto migration the given models
+		// uncomment the following line if you need auto migration the given repository
 		// not suggested in production environment.
 		// migrateDatabase(dbIns)
 
-		mysqlFactory = &datastore{dbIns}
 	})
 
-	return mysqlFactory, nil
+	return dbIns, nil
 }
