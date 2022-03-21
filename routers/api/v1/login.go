@@ -3,6 +3,8 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	pkg "github.com/luenci/gopkg"
+	msRepo "github.com/luenci/oauth2/repository/mysql"
+	"github.com/luenci/oauth2/service"
 )
 
 func Login(ctx *gin.Context) {
@@ -16,8 +18,8 @@ func Login(ctx *gin.Context) {
 		pkg.Response(ctx, 400001, err)
 		return
 	}
-
-	token := srv.JWT.GenerateToken(users.UserId, true)
+	srv := service.NewJWTServices(msRepo.NewUserRepository())
+	token := srv.GenerateToken(user.Name, user.Password, true)
 
 	pkg.Response(ctx, 200000, token)
 

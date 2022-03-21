@@ -3,6 +3,9 @@ package mysql
 import (
 	"context"
 
+	"github.com/luenci/oauth2/config"
+	"github.com/luenci/oauth2/store/mysql"
+
 	"github.com/luenci/oauth2/entity"
 	"gorm.io/gorm"
 )
@@ -26,8 +29,7 @@ func (u *UserRepository) GetUserID(ctx context.Context, name, password string) (
 	return user, u.db.Select("user_id").Where("name = ? and password = ?", name, password).Find(&user).Error
 }
 
-func (u *UserRepository) Create(ctx context.Context) (entity.User, error) {
-	var user entity.User
+func (u *UserRepository) Create(ctx context.Context, user entity.User) (entity.User, error) {
 	return user, u.db.Create(&user).Error
 }
 
@@ -37,5 +39,8 @@ func (u *UserRepository) Update(ctx context.Context) (entity.User, error) {
 }
 
 func NewUserRepository() *UserRepository {
-	return &UserRepository{}
+	config.InitConf()
+	conf := config.GetConf()
+	dbIns, _ := mysql.NewMysqlStore(conf.Mysql.DSN)
+	return &UserRepository{dbIns}
 }

@@ -1,10 +1,9 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"time"
-
-	"github.com/luenci/oauth2/store"
 
 	"github.com/luenci/oauth2/repository"
 
@@ -20,7 +19,7 @@ type authCustomClaims struct {
 }
 
 type jwtServices struct {
-	store     store.Factory
+	userRepo  repository.UserRepositoryInterface
 	secretKey string
 	issure    string
 }
@@ -46,14 +45,12 @@ func getName() string {
 }
 
 func (srv *jwtServices) GenerateToken(userName, password string, isUser bool) string {
-
-	user := repository.NewUser()
-	err := user.GetUserID(userName, password)
+	usr, err := srv.userRepo.GetUserID(context.Background(), userName, password)
 	if err != nil {
 		return ""
 	}
 	claims := &authCustomClaims{
-		user.UserId,
+		usr.UserId,
 		isUser,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 48).Unix(),
@@ -82,9 +79,9 @@ func (srv *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, error) {
 
 }
 
-func newJWTServices(srv *service) *jwtServices {
+func NewJWTServices(repository repository.UserRepositoryInterface) *jwtServices {
 	return &jwtServices{
-		store:     srv.store,
+		userRepo:  repository,
 		secretKey: getSecretKey(),
 		issure:    getName(),
 	}

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	msRepo "github.com/luenci/oauth2/repository/mysql"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/luenci/oauth2/service"
@@ -17,8 +19,9 @@ func AuthorizeJWT() gin.HandlerFunc {
 			return
 		}
 
-		srv := service.NewALLService()
-		var token, err = srv.JWT.ValidateToken(authHeader)
+		srv := service.NewJWTServices(msRepo.NewUserRepository())
+
+		var token, err = srv.ValidateToken(authHeader)
 		if token.Valid {
 			claims := token.Claims.(jwt.MapClaims)
 			fmt.Println(claims)

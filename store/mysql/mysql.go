@@ -11,13 +11,13 @@ import (
 )
 
 var (
-	once sync.Once
+	once  sync.Once
+	dbIns *gorm.DB
 )
 
 func NewMysqlStore(dsn string, opts ...Options) (*gorm.DB, error) {
 
 	var err error
-	var dbIns *gorm.DB
 	once.Do(func() {
 		dbIns, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 			SkipDefaultTransaction:                   false,
@@ -26,18 +26,14 @@ func NewMysqlStore(dsn string, opts ...Options) (*gorm.DB, error) {
 			NamingStrategy:                           schema.NamingStrategy{SingularTable: true},
 		})
 		if err != nil {
-			panic(err)
+			return
 		}
 		db, _ := dbIns.DB()
 		for _, opt := range opts {
 			opt(db)
 		}
-
-		// uncomment the following line if you need auto migration the given repository
-		// not suggested in production environment.
-		// migrateDatabase(dbIns)
-
+		return
 	})
 
-	return dbIns, nil
+	return dbIns, err
 }

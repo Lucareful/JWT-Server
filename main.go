@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/luenci/oauth2/schema"
+	ms "github.com/luenci/oauth2/store/mysql"
 
-	"github.com/luenci/oauth2/store/mysql"
+	validate "github.com/luenci/oauth2/pkg/validator"
 
 	"github.com/luenci/oauth2/store/redis"
 
@@ -34,9 +34,12 @@ func main() {
 	conf := config.GetConf()
 
 	// check 创建数据库连接
-	mysql.InitMysqlClient(conf.Mysql.DSN, mysql.WithMaxIdleConnections(conf.Mysql.MaxIdleConnections),
-		mysql.WithMaxOpenConnections(conf.Mysql.MaxOpenConnections),
-		mysql.WithMaxConnectionLifeTime(conf.Mysql.MaxConnectionLifeTime))
+	if _, err := ms.NewMysqlStore(conf.Mysql.DSN,
+		ms.WithMaxIdleConnections(conf.Mysql.MaxIdleConnections),
+		ms.WithMaxOpenConnections(conf.Mysql.MaxOpenConnections),
+		ms.WithMaxConnectionLifeTime(conf.Mysql.MaxConnectionLifeTime)); err != nil {
+		panic(err)
+	}
 
 	// 创建redis连接
 	redis.PoolInitRedis(conf.Redis.Host, conf.Redis.Password)
@@ -49,7 +52,7 @@ func main() {
 	}
 
 	// 初始化翻译
-	schema.Init()
+	validate.Init()
 
 	go func() {
 		// service connections
