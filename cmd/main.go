@@ -17,7 +17,7 @@ import (
 	"github.com/luenci/oauth2/store/redis"
 
 	"github.com/luenci/oauth2/config"
-	"github.com/luenci/oauth2/routers"
+	"github.com/luenci/oauth2/internal/routers"
 )
 
 // 生成 swagger

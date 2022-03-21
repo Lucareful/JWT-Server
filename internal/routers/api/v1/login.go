@@ -3,8 +3,8 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	pkg "github.com/luenci/gopkg"
-	msRepo "github.com/luenci/oauth2/repository/mysql"
-	"github.com/luenci/oauth2/service"
+	msRepo "github.com/luenci/oauth2/internal/repository/mysql"
+	"github.com/luenci/oauth2/internal/service"
 )
 
 func Login(ctx *gin.Context) {

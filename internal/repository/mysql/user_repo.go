@@ -6,7 +6,7 @@ import (
 	"github.com/luenci/oauth2/config"
 	"github.com/luenci/oauth2/store/mysql"
 
-	"github.com/luenci/oauth2/entity"
+	"github.com/luenci/oauth2/internal/entity"
 	"gorm.io/gorm"
 )
 

@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/luenci/oauth2/entity"
+	"github.com/luenci/oauth2/internal/entity"
 )
 
 type UserRepositoryInterface interface {

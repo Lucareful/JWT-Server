@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/luenci/oauth2/repository"
+	"github.com/luenci/oauth2/internal/repository"
 
 	"github.com/luenci/oauth2/config"
 

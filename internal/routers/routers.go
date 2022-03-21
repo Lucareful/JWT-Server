@@ -3,8 +3,8 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/luenci/oauth2/config"
+	v1 "github.com/luenci/oauth2/internal/routers/api/v1"
 	"github.com/luenci/oauth2/pkg/middlewares"
-	v1 "github.com/luenci/oauth2/routers/api/v1"
 )
 
 // InitRouter 初始化路由
